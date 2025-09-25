@@ -51,19 +51,15 @@
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 4rem;
             margin: 0;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.65);
-            font-weight: 700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            font-weight: 300;
             letter-spacing: 3px;
-            background: linear-gradient(15deg, #6b64457f, #795e2780, #7e63a277);
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
             -webkit-background-clip: text;
-            -webkit-text-fill-color:rgba(21, 54, 64, 0.751);
+            -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-        .header h1:hover{
-            -webkit-text-fill-color:rgba(60, 66, 78, 0.751);
-            opacity: 0.65;
         }
 
         /* スライダー */
@@ -676,7 +672,7 @@
 </head>
 <body>
     <div class="header">
-        <h1><a href="https://www.instagram.com/korosuke_diaries/" style="text-decoration: none;" target="_blank" rel="noopener noreferrer" >@Korosuke_diaries #キリトリセカイ</a></h1>
+        <h1>📸 写真ポートフォリオ</h1>
         <div id="adminIndicator" style="display: none; color: #FFD700; font-size: 1rem; margin-top: 0.5rem; opacity: 0.9; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
             🔧 管理者モード
         </div>
@@ -767,6 +763,7 @@
 
             init() {
                 this.checkAdminMode();
+                this.loadSavedData();
                 this.setupLazyLoading();
                 this.setupEventListeners();
                 this.updateSlider();
@@ -795,6 +792,40 @@
                     const adminIndicator = document.getElementById('adminIndicator');
                     if (adminIndicator) adminIndicator.style.display = 'block';
                 }
+            }
+
+            loadSavedData() {
+                // ページ内に埋め込まれたデータを読み込み
+                const savedDataElement = document.getElementById('savedPortfolioData');
+                if (savedDataElement && savedDataElement.textContent.trim()) {
+                    try {
+                        const savedData = JSON.parse(savedDataElement.textContent);
+                        this.photos = savedData.photos || [];
+                        this.categories = savedData.categories || ['建物', '動物', '風景', 'その他'];
+                    } catch (e) {
+                        console.log('保存されたデータの読み込みに失敗しました');
+                    }
+                }
+            }
+
+            saveData() {
+                // データをページ内に埋め込んで保存
+                const dataToSave = {
+                    photos: this.photos,
+                    categories: this.categories,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                let savedDataElement = document.getElementById('savedPortfolioData');
+                if (!savedDataElement) {
+                    savedDataElement = document.createElement('script');
+                    savedDataElement.id = 'savedPortfolioData';
+                    savedDataElement.type = 'application/json';
+                    savedDataElement.style.display = 'none';
+                    document.head.appendChild(savedDataElement);
+                }
+                
+                savedDataElement.textContent = JSON.stringify(dataToSave);
             }
 
             setupLazyLoading() {
@@ -1003,6 +1034,7 @@
                                     category: 'その他'
                                 };
                                 this.photos.push(photo);
+                                this.saveData(); // データを保存
                                 this.updateSlider();
                                 this.renderCategoryTabs();
                                 this.renderGallery();
@@ -1058,6 +1090,7 @@
 
             addCategory(categoryName) {
                 this.categories.push(categoryName);
+                this.saveData(); // データを保存
                 this.renderCategoryTabs();
             }
 
@@ -1073,6 +1106,7 @@
                     if (this.currentCategory === categoryName) {
                         this.switchCategory('all');
                     }
+                    this.saveData(); // データを保存
                     this.renderCategoryTabs();
                     this.renderGallery();
                 }
@@ -1182,6 +1216,7 @@
                 const photo = this.photos.find(p => p.id == photoId);
                 if (photo) {
                     photo.category = newCategory;
+                    this.saveData(); // データを保存
                     this.updateSlider();
                     this.renderCategoryTabs();
                     this.renderGallery();
@@ -1189,7 +1224,10 @@
             }
 
             deletePhoto(photoId) {
+                if (!this.isAdmin) return; // 管理者のみ削除可能
+                
                 this.photos = this.photos.filter(p => p.id != photoId);
+                this.saveData(); // データを保存
                 this.updateSlider();
                 this.renderCategoryTabs();
                 this.renderGallery();
@@ -1217,6 +1255,7 @@
                     const newFilename = input.value.trim();
                     if (newFilename && newFilename !== currentFilename) {
                         photo.filename = newFilename;
+                        this.saveData(); // データを保存
                     }
                     input.remove();
                     element.textContent = photo.filename;
@@ -1301,6 +1340,5 @@
         // グローバルインスタンス
         const portfolio = new PhotoPortfolio();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984a46abd2d5dffd',t:'MTc1ODgwMDczNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984a9bc9a35fe374',t:'MTc1ODgwNDIyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
