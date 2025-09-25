@@ -1,1 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写真ポートフォリオ</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #2C1810 0%, #8B4513 25%, #CD853F 50%, #DEB887 75%, #F5DEB3 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(139,69,19,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(205,133,63,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(222,184,135,0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ヘッダー */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            color: #FFF8DC;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(139,69,19,0.1), rgba(205,133,63,0.1));
+            backdrop-filter: blur(20px);
+            z-index: -1;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin: 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.65);
+            font-weight: 700;
+            letter-spacing: 3px;
+            background: linear-gradient(15deg, #6b64457f, #795e2780, #7e63a277);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color:rgba(21, 54, 64, 0.751);
+            background-clip: text;
+        }
+        .header h1:hover{
+            -webkit-text-fill-color:rgba(60, 66, 78, 0.751);
+            opacity: 0.65;
+        }
+
+        /* スライダー */
+        .slider-container {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 4rem;
+            background: rgba(139,69,19,0.2);
+            backdrop-filter: blur(15px);
+            border-top: 2px solid rgba(255,215,0,0.3);
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .slider {
+            display: flex;
+            animation: slide 25s linear infinite;
+            height: 100%;
+        }
+
+        .slider img {
+            height: 200px;
+            width: 260px;
+            object-fit: cover;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255,215,0,0.2);
+        }
+
+        .slider img:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border-color: rgba(255,215,0,0.6);
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ドロップゾーン */
+        .drop-zone {
+            border: 3px dashed rgba(255,215,0,0.6);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            background: linear-gradient(135deg, rgba(139,69,19,0.3), rgba(205,133,63,0.2));
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, rgba(139,69,19,0.4), rgba(205,133,63,0.3));
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .drop-zone p {
+            color: #FFF8DC;
+            font-size: 1.3rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: 300;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* カテゴリセクション */
+        .category-section {
+            background: linear-gradient(135deg, rgba(245,245,220,0.95), rgba(255,248,220,0.95));
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,215,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,215,0,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(205,133,63,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .category-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .category-header h2 {
+            color: #8B4513;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #8B4513, #CD853F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .add-category-btn {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: #FFF8DC;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(218,165,32,0.4);
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .add-category-btn:hover {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 10px 30px rgba(218,165,32,0.6);
+        }
+
+        /* カテゴリタブ */
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .category-tab {
+            background: linear-gradient(135deg, #DEB887, #D2B48C);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            position: relative;
+            color: #8B4513;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 2px solid rgba(139,69,19,0.2);
+        }
+
+        .category-tab:hover {
+            background: linear-gradient(135deg, #F5DEB3, #DEB887);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: rgba(139,69,19,0.4);
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: #FFF8DC;
+            box-shadow: 0 8px 25px rgba(218,165,32,0.4);
+            border-color: rgba(255,215,0,0.6);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .delete-category {
+            background: linear-gradient(135deg, #DC143C, #B22222);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(220,20,60,0.4);
+        }
+
+        .category-tab:hover .delete-category {
+            display: inline-block;
+        }
+
+        /* ギャラリー */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #FFF8DC, #F5F5DC);
+            border: 2px solid rgba(139,69,19,0.2);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border-color: rgba(218,165,32,0.6);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item .info {
+            padding: 20px;
+            background: linear-gradient(135deg, #FFF8DC, #F5F5DC);
+        }
+
+        .gallery-item .filename {
+            font-size: 1rem;
+            color: #8B4513;
+            margin: 0 0 12px 0;
+            word-break: break-all;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .gallery-item .filename:hover {
+            background: linear-gradient(135deg, #DEB887, #D2B48C);
+            color: #5D4E37;
+            transform: translateX(3px);
+        }
+
+        .gallery-item .filename-input {
+            font-size: 1rem;
+            color: #8B4513;
+            margin: 0 0 12px 0;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            border: 2px solid #DAA520;
+            border-radius: 6px;
+            padding: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            background: #FFF8DC;
+            font-weight: 500;
+        }
+
+        .gallery-item .filename-input:focus {
+            outline: none;
+            border-color: #B8860B;
+            box-shadow: 0 0 10px rgba(218,165,32,0.3);
+        }
+
+        .gallery-item select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #DEB887;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #FFF8DC, #F5F5DC);
+            color: #8B4513;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .gallery-item select:focus {
+            outline: none;
+            border-color: #DAA520;
+            box-shadow: 0 0 10px rgba(218,165,32,0.3);
+        }
+
+        .delete-photo {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #DC143C, #B22222);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220,20,60,0.4);
+            font-size: 1.2rem;
+        }
+
+        .gallery-item:hover .delete-photo {
+            opacity: 1;
+        }
+
+        .delete-photo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(220,20,60,0.6);
+        }
+
+        /* 写真表示モーダル */
+        .photo-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+        }
+
+        .photo-modal-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, rgba(218,165,32,0.3), rgba(184,134,11,0.3));
+            color: #FFD700;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            z-index: 2001;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .photo-modal-close:hover {
+            background: linear-gradient(135deg, rgba(218,165,32,0.5), rgba(184,134,11,0.5));
+            transform: scale(1.1);
+            border-color: rgba(255,215,0,0.6);
+        }
+
+        .photo-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, rgba(218,165,32,0.3), rgba(184,134,11,0.3));
+            color: #FFD700;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 2.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            z-index: 2001;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .photo-nav-btn:hover {
+            background: linear-gradient(135deg, rgba(218,165,32,0.5), rgba(184,134,11,0.5));
+            transform: translateY(-50%) scale(1.1);
+            border-color: rgba(255,215,0,0.6);
+        }
+
+        .photo-nav-prev {
+            left: 2rem;
+        }
+
+        .photo-nav-next {
+            right: 2rem;
+        }
+
+        .photo-modal-image-container {
+            max-width: 90%;
+            max-height: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .photo-modal-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.7);
+            border: 3px solid rgba(255,215,0,0.3);
+        }
+
+        .photo-modal-info {
+            text-align: center;
+            color: #FFF8DC;
+            max-width: 90%;
+        }
+
+        .photo-modal-info h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.8rem;
+            word-break: break-all;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .photo-modal-info p {
+            margin: 0 0 1rem 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .photo-modal-counter {
+            font-size: 1rem;
+            opacity: 0.7;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #FFF8DC, #F5F5DC);
+            margin: 10% auto;
+            padding: 3rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 2px solid rgba(218,165,32,0.3);
+        }
+
+        .modal-content h3 {
+            color: #8B4513;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-weight: 300;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #DEB887;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            box-sizing: border-box;
+            background: #FFF8DC;
+            color: #8B4513;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-weight: 500;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #DAA520;
+            box-shadow: 0 0 15px rgba(218,165,32,0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-weight: 500;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #DAA520, #B8860B);
+            color: #FFF8DC;
+            box-shadow: 0 4px 15px rgba(218,165,32,0.3);
+        }
+
+        .modal-btn.secondary {
+            background: linear-gradient(135deg, #DEB887, #D2B48C);
+            color: #8B4513;
+            box-shadow: 0 4px 15px rgba(222,184,135,0.3);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .photo-modal-content {
+                padding: 1rem;
+            }
+
+            .photo-modal-close {
+                top: 1rem;
+                right: 1rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .photo-nav-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+
+            .photo-nav-prev {
+                left: 1rem;
+            }
+
+            .photo-nav-next {
+                right: 1rem;
+            }
+
+            .photo-modal-image-container {
+                max-height: 60%;
+            }
+
+            .photo-modal-info h3 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><a href="https://www.instagram.com/korosuke_diaries/" style="text-decoration: none;" target="_blank" rel="noopener noreferrer" >@Korosuke_diaries #キリトリセカイ</a></h1>
+        <div id="adminIndicator" style="display: none; color: #FFD700; font-size: 1rem; margin-top: 0.5rem; opacity: 0.9; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            🔧 管理者モード
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="slider">
+            <!-- デモ画像 -->
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff6b6b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ee5a52;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad1)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E建物%3C/text%3E%3C/svg%3E" alt="建物">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234ecdc4;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2344a08d;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad2)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E動物%3C/text%3E%3C/svg%3E" alt="動物">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2345b7d1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%233c9bd1;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad3)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E風景%3C/text%3E%3C/svg%3E" alt="風景">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f7b731;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f39c12;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad4)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3Eその他%3C/text%3E%3C/svg%3E" alt="その他">
+            <!-- 複製してループ効果を作る -->
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff6b6b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ee5a52;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad1)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E建物%3C/text%3E%3C/svg%3E" alt="建物">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234ecdc4;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2344a08d;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad2)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E動物%3C/text%3E%3C/svg%3E" alt="動物">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2345b7d1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%233c9bd1;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad3)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3E風景%3C/text%3E%3C/svg%3E" alt="風景">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f7b731;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f39c12;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='260' height='200' fill='url(%23grad4)'/%3E%3Ctext x='130' y='100' text-anchor='middle' dy='.3em' fill='white' font-size='24' font-weight='bold'%3Eその他%3C/text%3E%3C/svg%3E" alt="その他">
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="drop-zone" id="dropZone">
+            <p>📁 ここに写真をドラッグ&ドロップするか、クリックして選択してください</p>
+            <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+        </div>
+
+        <div class="category-section">
+            <div class="category-header">
+                <h2>ギャラリー</h2>
+                <button class="add-category-btn" id="addCategoryBtn">+</button>
+            </div>
+
+            <div class="category-tabs" id="categoryTabs">
+                <button class="category-tab active" data-category="all">すべて (0)</button>
+                <button class="category-tab" data-category="建物">建物 (0)</button>
+                <button class="category-tab" data-category="動物">動物 (0)</button>
+                <button class="category-tab" data-category="風景">風景 (0)</button>
+                <button class="category-tab" data-category="その他">その他 (0)</button>
+            </div>
+
+            <div class="gallery" id="gallery"></div>
+        </div>
+    </div>
+
+    <!-- 写真表示モーダル -->
+    <div class="photo-modal" id="photoModal">
+        <div class="photo-modal-content">
+            <button class="photo-modal-close" id="closePhotoModal">×</button>
+            <button class="photo-nav-btn photo-nav-prev" id="prevPhoto">‹</button>
+            <button class="photo-nav-btn photo-nav-next" id="nextPhoto">›</button>
+            <div class="photo-modal-image-container">
+                <img id="modalImage" src="" alt="">
+            </div>
+            <div class="photo-modal-info">
+                <h3 id="modalFilename"></h3>
+                <p id="modalCategory"></p>
+                <div class="photo-modal-counter">
+                    <span id="photoCounter"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- カテゴリ追加モーダル -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <h3>新しいカテゴリを追加</h3>
+            <input type="text" id="categoryInput" placeholder="カテゴリ名を入力">
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="confirmAddCategory">追加</button>
+                <button class="modal-btn secondary" id="cancelAddCategory">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PhotoPortfolio {
+            constructor() {
+                this.photos = [];
+                this.categories = ['建物', '動物', '風景', 'その他'];
+                this.currentCategory = 'all';
+                this.currentPhotoIndex = 0;
+                this.currentPhotos = [];
+                this.isAdmin = false;
+                this.lazyLoadObserver = null;
+                this.init();
+            }
+
+            init() {
+                this.checkAdminMode();
+                this.setupLazyLoading();
+                this.setupEventListeners();
+                this.updateSlider();
+                this.renderGallery();
+            }
+
+            checkAdminMode() {
+                // URLパラメータまたはローカルストレージで管理者モードを確認
+                const urlParams = new URLSearchParams(window.location.search);
+                const adminParam = urlParams.get('admin');
+                const storedAdmin = localStorage.getItem('portfolioAdmin');
+                
+                if (adminParam === 'true' || storedAdmin === 'true') {
+                    this.isAdmin = true;
+                    localStorage.setItem('portfolioAdmin', 'true');
+                }
+                
+                // 管理者モードでない場合、アップロード関連要素を非表示
+                if (!this.isAdmin) {
+                    const dropZone = document.getElementById('dropZone');
+                    const addCategoryBtn = document.getElementById('addCategoryBtn');
+                    if (dropZone) dropZone.style.display = 'none';
+                    if (addCategoryBtn) addCategoryBtn.style.display = 'none';
+                } else {
+                    // 管理者モードの場合、インジケーターを表示
+                    const adminIndicator = document.getElementById('adminIndicator');
+                    if (adminIndicator) adminIndicator.style.display = 'block';
+                }
+            }
+
+            setupLazyLoading() {
+                // Intersection Observer for lazy loading
+                if ('IntersectionObserver' in window) {
+                    this.lazyLoadObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const img = entry.target;
+                                if (img.dataset.src) {
+                                    img.src = img.dataset.src;
+                                    img.removeAttribute('data-src');
+                                    this.lazyLoadObserver.unobserve(img);
+                                }
+                            }
+                        });
+                    }, {
+                        rootMargin: '50px'
+                    });
+                }
+            }
+
+            setupEventListeners() {
+                const dropZone = document.getElementById('dropZone');
+                const fileInput = document.getElementById('fileInput');
+                const categoryTabs = document.getElementById('categoryTabs');
+                const addCategoryBtn = document.getElementById('addCategoryBtn');
+                const categoryModal = document.getElementById('categoryModal');
+                const confirmAddCategory = document.getElementById('confirmAddCategory');
+                const cancelAddCategory = document.getElementById('cancelAddCategory');
+                const categoryInput = document.getElementById('categoryInput');
+                const photoModal = document.getElementById('photoModal');
+                const closePhotoModal = document.getElementById('closePhotoModal');
+                const prevPhoto = document.getElementById('prevPhoto');
+                const nextPhoto = document.getElementById('nextPhoto');
+
+                // ドラッグ&ドロップ（管理者のみ）
+                if (this.isAdmin) {
+                    dropZone.addEventListener('click', () => fileInput.click());
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => {
+                        dropZone.classList.remove('dragover');
+                    });
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        this.handleFiles(e.dataTransfer.files);
+                    });
+
+                    fileInput.addEventListener('change', (e) => {
+                        this.handleFiles(e.target.files);
+                    });
+                }
+
+                // カテゴリタブ
+                categoryTabs.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('category-tab')) {
+                        this.switchCategory(e.target.dataset.category);
+                    } else if (e.target.classList.contains('delete-category')) {
+                        e.stopPropagation();
+                        this.deleteCategory(e.target.parentElement.dataset.category);
+                    }
+                });
+
+                // カテゴリ追加（管理者のみ）
+                if (this.isAdmin) {
+                    addCategoryBtn.addEventListener('click', () => {
+                        categoryModal.style.display = 'block';
+                        categoryInput.focus();
+                    });
+                }
+
+                confirmAddCategory.addEventListener('click', () => {
+                    const categoryName = categoryInput.value.trim();
+                    if (categoryName && !this.categories.includes(categoryName)) {
+                        this.addCategory(categoryName);
+                        categoryModal.style.display = 'none';
+                        categoryInput.value = '';
+                    }
+                });
+
+                cancelAddCategory.addEventListener('click', () => {
+                    categoryModal.style.display = 'none';
+                    categoryInput.value = '';
+                });
+
+                categoryInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        confirmAddCategory.click();
+                    }
+                });
+
+                // 写真モーダル
+                closePhotoModal.addEventListener('click', () => {
+                    photoModal.style.display = 'none';
+                });
+
+                prevPhoto.addEventListener('click', () => {
+                    this.showPrevPhoto();
+                });
+
+                nextPhoto.addEventListener('click', () => {
+                    this.showNextPhoto();
+                });
+
+                // キーボードナビゲーション
+                document.addEventListener('keydown', (e) => {
+                    if (photoModal.style.display === 'block') {
+                        if (e.key === 'Escape') {
+                            photoModal.style.display = 'none';
+                        } else if (e.key === 'ArrowLeft') {
+                            this.showPrevPhoto();
+                        } else if (e.key === 'ArrowRight') {
+                            this.showNextPhoto();
+                        }
+                    }
+                });
+
+                // モーダル外クリックで閉じる
+                photoModal.addEventListener('click', (e) => {
+                    if (e.target === photoModal) {
+                        photoModal.style.display = 'none';
+                    }
+                });
+
+                categoryModal.addEventListener('click', (e) => {
+                    if (e.target === categoryModal) {
+                        categoryModal.style.display = 'none';
+                        categoryInput.value = '';
+                    }
+                });
+
+                // スライダー画像のクリックイベントを設定
+                this.setupSliderClickEvents();
+            }
+
+            setupSliderClickEvents() {
+                const sliderImages = document.querySelectorAll('#slider img');
+                sliderImages.forEach((img, index) => {
+                    img.addEventListener('click', () => {
+                        // データ属性から写真IDを取得、なければデモ画像として処理
+                        const photoId = img.dataset.photoId;
+                        if (photoId) {
+                            this.openPhotoModal(photoId);
+                        } else {
+                            this.showDemoImageModal(img.src, img.alt, index);
+                        }
+                    });
+                });
+            }
+
+            showDemoImageModal(src, alt, index) {
+                // デモ画像用の仮想写真リストを作成
+                const demoPhotos = [
+                    { id: 'demo-1', filename: '建物', category: '建物', src: src },
+                    { id: 'demo-2', filename: '動物', category: '動物', src: src },
+                    { id: 'demo-3', filename: '風景', category: '風景', src: src },
+                    { id: 'demo-4', filename: 'その他', category: 'その他', src: src }
+                ];
+                
+                // クリックされたデモ画像のカテゴリを特定
+                const clickedCategory = alt;
+                
+                // 同じカテゴリのデモ画像のみを取得
+                this.currentPhotos = demoPhotos.filter(photo => photo.category === clickedCategory);
+                this.currentPhotoIndex = 0;
+                
+                const photoModal = document.getElementById('photoModal');
+                const modalImage = document.getElementById('modalImage');
+                const modalFilename = document.getElementById('modalFilename');
+                const modalCategory = document.getElementById('modalCategory');
+                const photoCounter = document.getElementById('photoCounter');
+                const prevBtn = document.getElementById('prevPhoto');
+                const nextBtn = document.getElementById('nextPhoto');
+                
+                modalImage.src = src;
+                modalImage.alt = alt;
+                modalFilename.textContent = alt + ' (デモ画像)';
+                modalCategory.textContent = 'カテゴリ: ' + alt;
+                photoCounter.textContent = `1 / 1 (デモ)`;
+                
+                // デモ画像は1枚なのでナビゲーションボタンを非表示
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                
+                photoModal.style.display = 'block';
+            }
+
+            handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            // ファイル名から拡張子を除去
+                            const cleanFilename = file.name.replace(/\.[^/.]+$/, "");
+                            
+                            // 画像を圧縮してサイズを軽量化
+                            this.compressImage(e.target.result, (compressedSrc) => {
+                                const photo = {
+                                    id: Date.now() + Math.random(),
+                                    src: compressedSrc,
+                                    filename: cleanFilename,
+                                    category: 'その他'
+                                };
+                                this.photos.push(photo);
+                                this.updateSlider();
+                                this.renderCategoryTabs();
+                                this.renderGallery();
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            compressImage(src, callback) {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // 最大サイズを設定（幅または高さの最大値）
+                    const maxSize = 1200;
+                    let { width, height } = img;
+                    
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = (height * maxSize) / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = (width * maxSize) / height;
+                            height = maxSize;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // 品質を0.8に設定して圧縮
+                    const compressedSrc = canvas.toDataURL('image/jpeg', 0.8);
+                    callback(compressedSrc);
+                };
+                img.src = src;
+            }
+
+            switchCategory(category) {
+                this.currentCategory = category;
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-category="${category}"]`).classList.add('active');
+                this.renderGallery();
+            }
+
+            addCategory(categoryName) {
+                this.categories.push(categoryName);
+                this.renderCategoryTabs();
+            }
+
+            deleteCategory(categoryName) {
+                if (this.categories.includes(categoryName) && categoryName !== '建物' && categoryName !== '動物' && categoryName !== '風景' && categoryName !== 'その他') {
+                    this.categories = this.categories.filter(cat => cat !== categoryName);
+                    // そのカテゴリの写真を「その他」に移動
+                    this.photos.forEach(photo => {
+                        if (photo.category === categoryName) {
+                            photo.category = 'その他';
+                        }
+                    });
+                    if (this.currentCategory === categoryName) {
+                        this.switchCategory('all');
+                    }
+                    this.renderCategoryTabs();
+                    this.renderGallery();
+                }
+            }
+
+            renderCategoryTabs() {
+                const categoryTabs = document.getElementById('categoryTabs');
+                const totalPhotos = this.photos.length;
+                categoryTabs.innerHTML = `<button class="category-tab active" data-category="all">すべて (${totalPhotos})</button>`;
+                
+                this.categories.forEach(category => {
+                    const categoryCount = this.photos.filter(photo => photo.category === category).length;
+                    const isDefault = ['建物', '動物', '風景', 'その他'].includes(category);
+                    const deleteBtn = isDefault ? '' : '<button class="delete-category">×</button>';
+                    categoryTabs.innerHTML += `
+                        <button class="category-tab" data-category="${category}">
+                            ${category} (${categoryCount})${deleteBtn}
+                        </button>
+                    `;
+                });
+                
+                // ギャラリーも再描画してセレクトボックスを更新
+                this.renderGallery();
+            }
+
+            updateSlider() {
+                const slider = document.getElementById('slider');
+                if (this.photos.length > 0) {
+                    // 実際の写真でスライダーを更新
+                    const shuffledPhotos = [...this.photos].sort(() => Math.random() - 0.5);
+                    const photosToShow = shuffledPhotos.slice(0, 8);
+                    slider.innerHTML = '';
+                    
+                    // 写真を2回追加してループ効果を作る
+                    for (let i = 0; i < 2; i++) {
+                        photosToShow.forEach(photo => {
+                            const img = document.createElement('img');
+                            img.src = photo.src;
+                            img.alt = photo.filename;
+                            img.style.cursor = 'pointer';
+                            img.dataset.photoId = photo.id; // 写真IDをデータ属性に保存
+                            slider.appendChild(img);
+                        });
+                    }
+                } else {
+                    // デモ画像の場合もクリック可能にする
+                    this.setupSliderClickEvents();
+                }
+                
+                // スライダーのクリックイベントを再設定
+                this.setupSliderClickEvents();
+            }
+
+            renderGallery() {
+                const gallery = document.getElementById('gallery');
+                const filteredPhotos = this.currentCategory === 'all' 
+                    ? this.photos 
+                    : this.photos.filter(photo => photo.category === this.currentCategory);
+
+                gallery.innerHTML = '';
+                filteredPhotos.forEach(photo => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    
+                    // 管理者モードかどうかで表示内容を変更
+                    const editableFilename = this.isAdmin 
+                        ? `<p class="filename" onclick="portfolio.editFilename('${photo.id}', this)" title="クリックして名前を変更">${photo.filename}</p>`
+                        : `<p class="filename">${photo.filename}</p>`;
+                    
+                    const categorySelect = this.isAdmin 
+                        ? `<select onchange="portfolio.changePhotoCategory('${photo.id}', this.value)">
+                            ${this.categories.map(cat => 
+                                `<option value="${cat}" ${cat === photo.category ? 'selected' : ''}>${cat}</option>`
+                            ).join('')}
+                           </select>`
+                        : `<p style="font-size: 0.9rem; color: #8B4513; margin: 0; font-weight: 500;">${photo.category}</p>`;
+                    
+                    const deleteButton = this.isAdmin 
+                        ? `<button class="delete-photo" onclick="portfolio.deletePhoto('${photo.id}')">×</button>`
+                        : '';
+                    
+                    // 遅延読み込み用のプレースホルダー画像
+                    const placeholderSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='220' viewBox='0 0 280 220'%3E%3Cdefs%3E%3ClinearGradient id='loading' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23DEB887;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23D2B48C;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='280' height='220' fill='url(%23loading)'/%3E%3Ctext x='140' y='110' text-anchor='middle' dy='.3em' fill='%235D4E37' font-size='18' font-weight='bold'%3E読み込み中...%3C/text%3E%3C/svg%3E";
+                    
+                    item.innerHTML = `
+                        <img src="${placeholderSrc}" data-src="${photo.src}" alt="${photo.filename}" onclick="portfolio.openPhotoModal('${photo.id}')" style="cursor: pointer;" loading="lazy">
+                        <div class="info">
+                            ${editableFilename}
+                            ${categorySelect}
+                        </div>
+                        ${deleteButton}
+                    `;
+                    gallery.appendChild(item);
+                    
+                    // 遅延読み込みの設定
+                    const img = item.querySelector('img');
+                    if (this.lazyLoadObserver) {
+                        this.lazyLoadObserver.observe(img);
+                    } else {
+                        // Intersection Observer が使えない場合は即座に読み込み
+                        img.src = photo.src;
+                    }
+                });
+            }
+
+            changePhotoCategory(photoId, newCategory) {
+                const photo = this.photos.find(p => p.id == photoId);
+                if (photo) {
+                    photo.category = newCategory;
+                    this.updateSlider();
+                    this.renderCategoryTabs();
+                    this.renderGallery();
+                }
+            }
+
+            deletePhoto(photoId) {
+                this.photos = this.photos.filter(p => p.id != photoId);
+                this.updateSlider();
+                this.renderCategoryTabs();
+                this.renderGallery();
+            }
+
+            editFilename(photoId, element) {
+                if (!this.isAdmin) return; // 管理者のみ編集可能
+                
+                const photo = this.photos.find(p => p.id == photoId);
+                if (!photo) return;
+
+                const currentFilename = photo.filename;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentFilename;
+                input.className = 'filename-input';
+                
+                // 元の要素を入力フィールドに置き換え
+                element.style.display = 'none';
+                element.parentNode.insertBefore(input, element);
+                input.focus();
+                input.select();
+
+                const saveFilename = () => {
+                    const newFilename = input.value.trim();
+                    if (newFilename && newFilename !== currentFilename) {
+                        photo.filename = newFilename;
+                    }
+                    input.remove();
+                    element.textContent = photo.filename;
+                    element.style.display = 'block';
+                };
+
+                const cancelEdit = () => {
+                    input.remove();
+                    element.style.display = 'block';
+                };
+
+                input.addEventListener('blur', saveFilename);
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        saveFilename();
+                    } else if (e.key === 'Escape') {
+                        cancelEdit();
+                    }
+                });
+            }
+
+            openPhotoModal(photoId) {
+                // 選択された写真を見つける
+                const selectedPhoto = this.photos.find(photo => photo.id == photoId);
+                if (!selectedPhoto) return;
+                
+                // 選択された写真と同じカテゴリの写真リストを取得
+                this.currentPhotos = this.photos.filter(photo => photo.category === selectedPhoto.category);
+                
+                // 選択された写真のインデックスを見つける
+                this.currentPhotoIndex = this.currentPhotos.findIndex(photo => photo.id == photoId);
+                
+                if (this.currentPhotoIndex !== -1) {
+                    this.showPhotoInModal();
+                    document.getElementById('photoModal').style.display = 'block';
+                }
+            }
+
+            showPhotoInModal() {
+                if (this.currentPhotos.length === 0) return;
+                
+                const photo = this.currentPhotos[this.currentPhotoIndex];
+                const modalImage = document.getElementById('modalImage');
+                const modalFilename = document.getElementById('modalFilename');
+                const modalCategory = document.getElementById('modalCategory');
+                const photoCounter = document.getElementById('photoCounter');
+                const prevBtn = document.getElementById('prevPhoto');
+                const nextBtn = document.getElementById('nextPhoto');
+                
+                modalImage.src = photo.src;
+                modalImage.alt = photo.filename;
+                modalFilename.textContent = photo.filename;
+                modalCategory.textContent = `カテゴリ: ${photo.category}`;
+                photoCounter.textContent = `${this.currentPhotoIndex + 1} / ${this.currentPhotos.length}`;
+                
+                // ナビゲーションボタンの表示/非表示
+                prevBtn.style.display = this.currentPhotos.length > 1 ? 'block' : 'none';
+                nextBtn.style.display = this.currentPhotos.length > 1 ? 'block' : 'none';
+            }
+
+            showPrevPhoto() {
+                if (this.currentPhotos.length <= 1) return;
+                
+                this.currentPhotoIndex = this.currentPhotoIndex > 0 
+                    ? this.currentPhotoIndex - 1 
+                    : this.currentPhotos.length - 1;
+                
+                this.showPhotoInModal();
+            }
+
+            showNextPhoto() {
+                if (this.currentPhotos.length <= 1) return;
+                
+                this.currentPhotoIndex = this.currentPhotoIndex < this.currentPhotos.length - 1 
+                    ? this.currentPhotoIndex + 1 
+                    : 0;
+                
+                this.showPhotoInModal();
+            }
+        }
+
+        // グローバルインスタンス
+        const portfolio = new PhotoPortfolio();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'984a46abd2d5dffd',t:'MTc1ODgwMDczNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
